@@ -52,6 +52,7 @@ public class PostServiceImplementation implements PostService {
         return mapToPostDTO(postrepo.save(post));
     }
     
+    @Override
     public void updatePost(Long id, PostRequest request) {
         Post post = postrepo.findById(id).orElseThrow(
             ( ) -> new ResourceNotFoundException("post does not exist"));
