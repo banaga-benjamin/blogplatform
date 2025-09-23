@@ -65,4 +65,16 @@ public class PostServiceImplementation implements PostService {
         post.setTitle(request.getTitle( ));
     }
     
+    @Override
+    public void deletePost(Long id) {
+        Post post = postrepo.findById(id).orElseThrow(
+            ( ) -> new ResourceNotFoundException("post does not exist"));
+        
+        if (post.getUser( ) != getCurrentUser( )) {
+            throw new ResourceNotFoundException("post does not exist");
+        }
+
+        postrepo.delete(post);
+    }
+    
 }
