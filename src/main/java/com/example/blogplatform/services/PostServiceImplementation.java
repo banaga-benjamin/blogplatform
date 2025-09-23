@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.example.blogplatform.models.Post;
 import com.example.blogplatform.models.User;
 import com.example.blogplatform.dtos.PostDTO;
+import com.example.blogplatform.dtos.UpdatePostRequest;
 import com.example.blogplatform.dtos.CreatePostRequest;
 
 import com.example.blogplatform.repositories.PostRepository;
@@ -50,6 +51,18 @@ public class PostServiceImplementation implements PostService {
         post.setContent(request.getContent());
 
         return mapToPostDTO(postrepo.save(post));
+    }
+    
+    public void updatePost(Long id, UpdatePostRequest request) {
+        Post post = postrepo.findById(id).orElseThrow(
+            ( ) -> new ResourceNotFoundException("post does not exist"));
+        
+        if (post.getUser( ) != getCurrentUser( )) {
+            throw new ResourceNotFoundException("post does not exist");
+        }
+
+        post.setContent(request.getContent( ));
+        post.setTitle(request.getTitle( ));
     }
     
 }
