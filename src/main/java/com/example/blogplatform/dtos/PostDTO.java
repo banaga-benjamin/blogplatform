@@ -1,7 +1,5 @@
 package com.example.blogplatform.dtos;
 
-import com.example.blogplatform.models.User;
-
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
