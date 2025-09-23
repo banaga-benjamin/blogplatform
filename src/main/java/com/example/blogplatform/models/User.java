@@ -1,5 +1,6 @@
 package com.example.blogplatform.models;
 
+import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
     public Long getId( ) { return id; }
 
