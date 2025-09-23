@@ -18,9 +18,6 @@ public class PostDTO {
     @Size(max = 5000, message = "content must be less than 5000 characters long")
     private String content;
 
-    @NotNull
-    private User user;
-
     public Long getId( ) { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -30,7 +27,4 @@ public class PostDTO {
     public String getContent( ) { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public User getUser( ) { return user; }
-    public void setUser(User user) { this.user = user; }
-    
 }
