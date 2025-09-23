@@ -3,7 +3,7 @@ package com.example.blogplatform.dtos;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 
-public class CreatePostRequest {
+public class PostRequest {
 
     @NotBlank
     @Size(max = 30, message = "title must be within thirty characters long")
