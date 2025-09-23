@@ -36,12 +36,12 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid AuthRequest request) throws BadRequestException {
-        if (repo.existsByUsername(request.getUserName( ))) {
+        if (repo.existsByUsername(request.getUsername( ))) {
             throw new BadRequestException("username already taken");
         }
 
         User user = new User( );
-        user.setUsername(request.getUserName( ));
+        user.setUsername(request.getUsername( ));
         user.setPassword(encoder.encode(request.getPassword( )));
         repo.save(user);
 
@@ -50,7 +50,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) throws ResourceNotFoundException {
-        User user = repo.findByUsername(request.getUserName( )).orElseThrow(
+        User user = repo.findByUsername(request.getUsername( )).orElseThrow(
             ( ) -> new ResourceNotFoundException("user does not exist")
         );
 
@@ -59,7 +59,7 @@ public class AuthenticationController {
         }
 
         AuthResponse response = new AuthResponse( );
-        response.setToken(util.generateToken(request.getUserName( )));
+        response.setToken(util.generateToken(request.getUsername( )));
         return ResponseEntity.ok(response);
     }
 }

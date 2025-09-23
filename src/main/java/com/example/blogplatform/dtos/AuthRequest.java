@@ -13,7 +13,7 @@ public class AuthRequest {
     @Size(min = 5, max = 30, message = "password must be between five and thirty characters long")
     private String password;
 
-    public String getUserName( ) { return username; }
+    public String getUsername( ) { return username; }
     public void setUsername(String username) { this.username = username; }
 
     public String getPassword( ) { return password; }
