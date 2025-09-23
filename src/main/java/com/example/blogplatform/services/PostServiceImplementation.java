@@ -2,6 +2,9 @@ package com.example.blogplatform.services;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.example.blogplatform.models.Post;
 import com.example.blogplatform.models.User;
 import com.example.blogplatform.dtos.PostDTO;
@@ -77,4 +80,16 @@ public class PostServiceImplementation implements PostService {
         postrepo.delete(post);
     }
     
+    @Override
+    public PostDTO getPostById(Long id) {
+        Post post = postrepo.findById(id).orElseThrow(
+            ( ) -> new ResourceNotFoundException("post does not exist"));
+        return mapToPostDTO(post);
+    }
+
+    @Override
+    public List<PostDTO> getAllPosts( ) {
+        List<Post> posts = postrepo.findAll( );
+        return posts.stream( ).map(this::mapToPostDTO).collect(Collectors.toList( ));
+    }
 }

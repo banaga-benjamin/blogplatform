@@ -1,5 +1,6 @@
 package com.example.blogplatform.controllers;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -8,6 +9,7 @@ import com.example.blogplatform.dtos.PostRequest;
 import com.example.blogplatform.services.PostService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +44,18 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         service.deletePost(id);
         return ResponseEntity.noContent( ).build( );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDTO> getPostById(@PathVariable Long id) {
+        PostDTO postdto = service.getPostById(id);
+        return ResponseEntity.ok(postdto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostDTO>> getAllPosts( ) {
+        List<PostDTO> postdtos = service.getAllPosts( );
+        return ResponseEntity.ok(postdtos);
     }
 
 }
