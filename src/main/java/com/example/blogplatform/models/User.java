@@ -3,6 +3,7 @@ package com.example.blogplatform.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "usertable")
 public class User {
 
     @Id

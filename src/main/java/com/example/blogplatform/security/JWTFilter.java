@@ -1,5 +1,7 @@
 package com.example.blogplatform.security;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 
@@ -9,10 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+@Component
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil util;
     private final UserDetailsService service;
