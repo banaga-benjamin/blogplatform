@@ -35,7 +35,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid AuthRequest request) {
+    public ResponseEntity<String> register(@RequestBody @Valid AuthRequest request) throws BadRequestException {
         if (repo.existsByUsername(request.getUserName( ))) {
             throw new BadRequestException("username already taken");
         }
