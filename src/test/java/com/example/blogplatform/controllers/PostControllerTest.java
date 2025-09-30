@@ -1,0 +1,74 @@
+package com.example.blogplatform.controllers;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import jakarta.transaction.Transactional;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.example.blogplatform.dtos.PostRequest;
+import com.example.blogplatform.dtos.AuthRequest;
+import com.example.blogplatform.dtos.AuthResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+@Transactional
+@SpringBootTest
+@AutoConfigureMockMvc
+public class PostControllerTest {
+    
+    private String token;
+
+    @Autowired
+    private MockMvc mock;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    private void setUp( ) throws Exception {
+        AuthRequest request = new AuthRequest( );
+        request.setUsername("testuser");
+        request.setPassword("testpassword");
+
+        mock.perform(post("/apis/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+            .andExpect(status( ).isOk( ));
+
+        MvcResult result = mock.perform(post("/apis/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+            .andExpect(status( ).isOk( ))
+            .andExpect(jsonPath("$.token").exists( ))
+            .andReturn( );
+
+        String result_json = result.getResponse( ).getContentAsString( );
+        AuthResponse response = mapper.readValue(result_json, AuthResponse.class);
+        token = response.getToken( );
+    }
+
+    @Test
+    public void createUserPost( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example content"))
+            .andExpect(jsonPath("$.title").value("example title"))
+            .andExpect(status( ).isCreated( ));
+    }
+}
