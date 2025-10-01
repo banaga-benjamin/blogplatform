@@ -110,6 +110,20 @@ public class PostControllerTest {
             .andExpect(status( ).isOk( ));
     }
 
+    @Test
+    public void updateNonExistentPost( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        mock.perform(put("/apis/post/{id}", 9999)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(status( ).isNotFound( ));
+    }
+
     // delete post test
     
     @Test
@@ -135,6 +149,12 @@ public class PostControllerTest {
             .andExpect(status( ).isNoContent( ));
     }
 
+    @Test
+    public void deleteNonExistentPost( ) throws Exception {
+        mock.perform(delete("/apis/post/{id}", 9999).header("Authorization", "Bearer " + token))
+            .andExpect(status( ).isNotFound( ));
+    }
+    
     // get post tests
 
     @Test
@@ -158,6 +178,12 @@ public class PostControllerTest {
 
         mock.perform(get("/apis/post/{id}", id).header("Authorization", "Bearer " + token))
             .andExpect(status( ).isOk( ));
+    }
+
+    @Test
+    public void getNonExistentPost( ) throws Exception {
+        mock.perform(get("/apis/post/{id}", 9999).header("Authorization", "Bearer " + token))
+            .andExpect(status( ).isNotFound( ));
     }
 
     @Test
