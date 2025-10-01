@@ -7,8 +7,7 @@ import jakarta.persistence.*;
 @Table(name = "posttable")
 public class Post {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable  = false)
