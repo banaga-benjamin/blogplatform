@@ -17,6 +17,7 @@ import com.example.blogplatform.dtos.AuthRequest;
 import com.example.blogplatform.dtos.AuthResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -130,8 +131,51 @@ public class PostControllerTest {
         String result_json = result.getResponse( ).getContentAsString( );
         Long id = mapper.readValue(result_json, PostDTO.class).getId( );
 
-        mock.perform(delete("/apis/post/{id}", id)
-                        .header("Authorization", "Bearer " + token))
+        mock.perform(delete("/apis/post/{id}", id).header("Authorization", "Bearer " + token))
             .andExpect(status( ).isNoContent( ));
+    }
+
+    // get post tests
+
+    @Test
+    public void getUserPost( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        MvcResult result = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example content"))
+            .andExpect(jsonPath("$.title").value("example title"))
+            .andExpect(status( ).isCreated( ))
+            .andReturn( );
+
+        String result_json = result.getResponse( ).getContentAsString( );
+        Long id = mapper.readValue(result_json, PostDTO.class).getId( );
+
+        mock.perform(get("/apis/post/{id}", id).header("Authorization", "Bearer " + token))
+            .andExpect(status( ).isOk( ));
+    }
+
+    @Test
+    public void getUserPosts( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example content"))
+            .andExpect(jsonPath("$.title").value("example title"))
+            .andExpect(status( ).isCreated( ));
+
+        mock.perform(get("/apis/post").header("Authorization", "Bearer " + token))
+            .andExpect(status( ).isOk( ));
     }
 }
