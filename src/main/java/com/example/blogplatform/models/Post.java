@@ -1,5 +1,6 @@
 package com.example.blogplatform.models;
 
+import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +20,9 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Comment> comments;
 
     public Long getId( ) { return id; }
 
