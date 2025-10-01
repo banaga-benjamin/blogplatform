@@ -11,11 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.example.blogplatform.dtos.PostDTO;
 import com.example.blogplatform.dtos.PostRequest;
 import com.example.blogplatform.dtos.AuthRequest;
 import com.example.blogplatform.dtos.AuthResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,6 +58,8 @@ public class PostControllerTest {
         token = response.getToken( );
     }
 
+    // create post test
+
     @Test
     public void createUserPost( ) throws Exception {
         PostRequest request = new PostRequest( );
@@ -70,5 +74,37 @@ public class PostControllerTest {
             .andExpect(jsonPath("$.content").value("example content"))
             .andExpect(jsonPath("$.title").value("example title"))
             .andExpect(status( ).isCreated( ));
+    }
+
+    // update post test
+
+    @Test
+    public void updateUserPost( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        MvcResult result = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example content"))
+            .andExpect(jsonPath("$.title").value("example title"))
+            .andExpect(status( ).isCreated( ))
+            .andReturn( );
+
+        String result_json = result.getResponse( ).getContentAsString( );
+        Long id = mapper.readValue(result_json, PostDTO.class).getId( );
+
+        request.setTitle("updated title");
+        request.setContent("updated content");
+        request_json = mapper.writeValueAsString(request);
+
+        mock.perform(put("/apis/post/{id}", id)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(status( ).isOk( ));
     }
 }
