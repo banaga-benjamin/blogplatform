@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @Transactional
@@ -106,5 +107,31 @@ public class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request_json))
             .andExpect(status( ).isOk( ));
+    }
+
+    // delete post test
+    
+    @Test
+    public void deleteUserPost( ) throws Exception {
+        PostRequest request = new PostRequest( );
+        request.setContent("example content");
+        request.setTitle("example title");
+        String request_json = mapper.writeValueAsString(request);
+
+        MvcResult result = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example content"))
+            .andExpect(jsonPath("$.title").value("example title"))
+            .andExpect(status( ).isCreated( ))
+            .andReturn( );
+
+        String result_json = result.getResponse( ).getContentAsString( );
+        Long id = mapper.readValue(result_json, PostDTO.class).getId( );
+
+        mock.perform(delete("/apis/post/{id}", id)
+                        .header("Authorization", "Bearer " + token))
+            .andExpect(status( ).isNoContent( ));
     }
 }
