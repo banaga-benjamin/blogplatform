@@ -3,13 +3,13 @@ package com.example.blogplatform.services;
 import org.springframework.stereotype.Service;
 
 import com.example.blogplatform.models.User;
+import com.example.blogplatform.models.Post;
 import com.example.blogplatform.models.Comment;
 import com.example.blogplatform.dtos.CommentDTO;
 import com.example.blogplatform.dtos.CommentRequest;
 import com.example.blogplatform.repositories.PostRepository;
 import com.example.blogplatform.repositories.UserRepository;
 import com.example.blogplatform.repositories.CommentRepository;
-
 import com.example.blogplatform.exceptions.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -42,7 +42,7 @@ public class CommentServiceImplementation implements CommentService {
     }
     
     @Override
-    public CommentDTO createComment(CommentRequest request, Long pid) {
+    public CommentDTO createComment(Long pid, CommentRequest request) {
         Comment comment = new Comment( );
         comment.setUser(getCurrentUser( ));
         comment.setContent(request.getContent( ));
@@ -51,5 +51,28 @@ public class CommentServiceImplementation implements CommentService {
         return mapToCommentDTO(commentrepo.save(comment));
     }
 
+    @Override
+    public void updateComment(Long cid, Long pid, CommentRequest request) {
+        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
+        Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
 
+        if (!comment.getPost( ).equals(post) || !comment.getUser( ).equals(getCurrentUser( ))) {
+            throw new ResourceNotFoundException("comment does not exist");
+        }
+
+        comment.setContent(request.getContent( ));
+        commentrepo.save(comment);
+    }
+
+    @Override
+    public void deleteComment(Long cid, Long pid) {
+        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
+        Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
+
+        if (!comment.getPost( ).equals(post) || !comment.getUser( ).equals(getCurrentUser( ))) {
+            throw new ResourceNotFoundException("comment does not exist");
+        }
+
+        commentrepo.delete(comment);
+    }
 }
