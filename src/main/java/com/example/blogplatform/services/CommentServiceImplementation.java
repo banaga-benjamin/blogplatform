@@ -57,12 +57,8 @@ public class CommentServiceImplementation implements CommentService {
 
     @Override
     public void updateComment(Long cid, Long pid, CommentRequest request) {
-        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
         Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
-
-        if (!comment.getPost( ).equals(post) || !comment.getUser( ).equals(getCurrentUser( ))) {
-            throw new ResourceNotFoundException("comment does not exist");
-        }
+        Comment comment = commentrepo.findByIdAndPostAndUser(cid, post, getCurrentUser( )).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
 
         comment.setContent(request.getContent( ));
         commentrepo.save(comment);
@@ -70,24 +66,16 @@ public class CommentServiceImplementation implements CommentService {
 
     @Override
     public void deleteComment(Long cid, Long pid) {
-        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
         Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
-
-        if (!comment.getPost( ).equals(post) || !comment.getUser( ).equals(getCurrentUser( ))) {
-            throw new ResourceNotFoundException("comment does not exist");
-        }
+        Comment comment = commentrepo.findByIdAndPostAndUser(cid, post, getCurrentUser( )).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
 
         commentrepo.delete(comment);
     }
 
     @Override
     public CommentDTO getComment(Long cid, Long pid) {
-        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
         Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
-
-        if (!comment.getPost( ).equals(post)) {
-            throw new ResourceNotFoundException("comment does not exist");
-        }
+        Comment comment = commentrepo.findByIdAndPost(cid, post).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
 
         return mapToCommentDTO(comment);
     }
