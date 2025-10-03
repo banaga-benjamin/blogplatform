@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,6 +63,8 @@ public class CommentControllerTest {
         token = response.getToken( );
     }
 
+    // create comment test
+
     @Test
     public void createComment( ) throws Exception {
         PostRequest postRequest = new PostRequest( );
@@ -90,6 +93,8 @@ public class CommentControllerTest {
             .andExpect(jsonPath("$.content").value("example comment content"))
             .andExpect(status( ).isCreated( ));
     }
+
+    // update comment test
 
     @Test
     public void updateComment( ) throws Exception {
@@ -133,6 +138,8 @@ public class CommentControllerTest {
             .andExpect(status( ).isOk( ));
     }
 
+    // delete comment test
+
     @Test
     public void deleteComment( ) throws Exception {
         PostRequest postRequest = new PostRequest( );
@@ -171,5 +178,80 @@ public class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request_json))
             .andExpect(status( ).isNoContent( ));
+    }
+
+    // get comment tests
+
+    @Test
+    public void getUserComment( ) throws Exception {
+        PostRequest postRequest = new PostRequest( );
+        postRequest.setContent("example post content");
+        postRequest.setTitle("example post title");
+        String postrequest_json = mapper.writeValueAsString(postRequest);
+
+        MvcResult postresult = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(postrequest_json))
+            .andReturn( );
+        
+        String postresult_json = postresult.getResponse( ).getContentAsString( );
+        Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
+
+        CommentRequest request = new CommentRequest( );
+        request.setContent("example comment content");
+        String request_json = mapper.writeValueAsString(request);
+
+        MvcResult result = mock.perform(post("/apis/comment")
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example comment content"))
+            .andExpect(status( ).isCreated( ))
+            .andReturn( );
+
+        String result_json = result.getResponse( ).getContentAsString( );
+        Long cid = mapper.readValue(result_json, CommentDTO.class).getId( );
+
+        mock.perform(get("/apis/comment/{id}", cid)
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid)))
+            .andExpect(jsonPath("$.content").value("example comment content"))
+            .andExpect(status( ).isOk( ));
+    }
+
+    @Test
+    public void getUserComments( ) throws Exception {
+        PostRequest postRequest = new PostRequest( );
+        postRequest.setContent("example post content");
+        postRequest.setTitle("example post title");
+        String postrequest_json = mapper.writeValueAsString(postRequest);
+
+        MvcResult postresult = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(postrequest_json))
+            .andReturn( );
+        
+        String postresult_json = postresult.getResponse( ).getContentAsString( );
+        Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
+
+        CommentRequest request = new CommentRequest( );
+        request.setContent("example comment content");
+        String request_json = mapper.writeValueAsString(request);
+
+        mock.perform(post("/apis/comment")
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request_json))
+            .andExpect(jsonPath("$.content").value("example comment content"))
+            .andExpect(status( ).isCreated( ));
+
+        mock.perform(get("/apis/comment")
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid)))
+            .andExpect(status( ).isOk( ));
     }
 }
