@@ -1,9 +1,12 @@
 package com.example.blogplatform.controllers;
 
-import org.springframework.http.MediaType;
+import com.example.blogplatform.dtos.PostDTO;
+import com.example.blogplatform.dtos.PostRequest;
 import com.example.blogplatform.dtos.AuthRequest;
 import com.example.blogplatform.dtos.AuthResponse;
 import com.example.blogplatform.dtos.CommentRequest;
+
+import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -57,13 +60,28 @@ public class CommentControllerTest {
     }
 
     @Test
-    private void createComment( ) throws Exception {
+    public void createComment( ) throws Exception {
+        PostRequest postRequest = new PostRequest( );
+        postRequest.setContent("example post content");
+        postRequest.setTitle("example post title");
+        String postrequest_json = mapper.writeValueAsString(postRequest);
+
+        MvcResult postresult = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(postrequest_json))
+            .andReturn( );
+        
+        String postresult_json = postresult.getResponse( ).getContentAsString( );
+        Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
+
         CommentRequest request = new CommentRequest( );
         request.setContent("example comment content");
         String request_json = mapper.writeValueAsString(request);
 
-        mock.perform(post("apis/comment")
+        mock.perform(post("/apis/comment")
                         .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request_json))
             .andExpect(jsonPath("$.content").value("example comment content"))
