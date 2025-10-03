@@ -1,20 +1,18 @@
 package com.example.blogplatform.services;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.blogplatform.models.Post;
-import com.example.blogplatform.models.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.example.blogplatform.dtos.PostDTO;
 import com.example.blogplatform.dtos.PostRequest;
-
+import com.example.blogplatform.exceptions.ResourceNotFoundException;
+import com.example.blogplatform.models.Post;
+import com.example.blogplatform.models.User;
 import com.example.blogplatform.repositories.PostRepository;
 import com.example.blogplatform.repositories.UserRepository;
-
-import com.example.blogplatform.exceptions.ResourceNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 public class PostServiceImplementation implements PostService {
@@ -57,12 +55,8 @@ public class PostServiceImplementation implements PostService {
     
     @Override
     public void updatePost(Long id, PostRequest request) {
-        Post post = postrepo.findById(id).orElseThrow(
+        Post post = postrepo.findByIdAndUser(id, getCurrentUser( )).orElseThrow(
             ( ) -> new ResourceNotFoundException("post does not exist"));
-        
-        if (post.getUser( ) != getCurrentUser( )) {
-            throw new ResourceNotFoundException("post does not exist");
-        }
 
         post.setContent(request.getContent( ));
         post.setTitle(request.getTitle( ));
@@ -70,12 +64,8 @@ public class PostServiceImplementation implements PostService {
     
     @Override
     public void deletePost(Long id) {
-        Post post = postrepo.findById(id).orElseThrow(
+        Post post = postrepo.findByIdAndUser(id, getCurrentUser( )).orElseThrow(
             ( ) -> new ResourceNotFoundException("post does not exist"));
-        
-        if (post.getUser( ) != getCurrentUser( )) {
-            throw new ResourceNotFoundException("post does not exist");
-        }
 
         postrepo.delete(post);
     }
