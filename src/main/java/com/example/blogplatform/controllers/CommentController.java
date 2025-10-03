@@ -1,6 +1,7 @@
 package com.example.blogplatform.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.blogplatform.dtos.CommentDTO;
@@ -42,5 +44,15 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long cid, @RequestParam Long pid) {
         service.deleteComment(cid, pid);
         return ResponseEntity.noContent( ).build( );
+    }
+
+    @GetMapping("/{cid}")
+    public ResponseEntity<CommentDTO> getComment(@PathVariable Long cid, @RequestParam Long pid) {
+        return ResponseEntity.ok(service.getComment(cid, pid));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CommentDTO>> getComments(@RequestParam Long pid) {
+        return ResponseEntity.ok(service.getComments(pid));
     }
 }

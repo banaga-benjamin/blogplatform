@@ -2,6 +2,9 @@ package com.example.blogplatform.services;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.example.blogplatform.models.User;
 import com.example.blogplatform.models.Post;
 import com.example.blogplatform.models.Comment;
@@ -11,6 +14,7 @@ import com.example.blogplatform.repositories.PostRepository;
 import com.example.blogplatform.repositories.UserRepository;
 import com.example.blogplatform.repositories.CommentRepository;
 import com.example.blogplatform.exceptions.ResourceNotFoundException;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
@@ -74,5 +78,24 @@ public class CommentServiceImplementation implements CommentService {
         }
 
         commentrepo.delete(comment);
+    }
+
+    @Override
+    public CommentDTO getComment(Long cid, Long pid) {
+        Comment comment = commentrepo.findById(cid).orElseThrow(( ) -> new ResourceNotFoundException("comment does not exist"));
+        Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
+
+        if (!comment.getPost( ).equals(post)) {
+            throw new ResourceNotFoundException("comment does not exist");
+        }
+
+        return mapToCommentDTO(comment);
+    }
+
+    @Override
+    public List<CommentDTO> getComments(Long pid) {
+        Post post = postrepo.findById(pid).orElseThrow(( ) -> new ResourceNotFoundException("post does not exist"));
+        List<Comment> comments = commentrepo.findByPost(post);
+        return comments.stream( ).map(this::mapToCommentDTO).collect(Collectors.toList( ));
     }
 }
