@@ -9,6 +9,7 @@ Supports CRUD operations for posts and comments. Implements user login via JWT.
 ## Setup
 
 ### 1. Clone and Build
+
 ```bash
 git clone https://github.com/banaga-benjamin/blogplatform
 cd blogplatform
@@ -17,6 +18,7 @@ mvn clean install
 ```
 
 ### 2. Configure PostGreSQL
+
 Login to PostgreSQL and create the database and user:
 ```sql
 CREATE DATABASE postdb;
@@ -28,6 +30,7 @@ GRANT ALL PRIVILEGES ON SCHEMA public TO postuser;
 ```
 
 ### 3. Application Properties
+
 The application is configured with the following defaults in
 `src/main/resources/application.properties`:
 ```
@@ -49,6 +52,7 @@ mvn spring-boot:run
 ## Testing
 
 ### 1, Configure PostGreSQL
+
 Configure PostGreSQL
 ```sql
 CREATE DATABASE postdb_test;
@@ -60,6 +64,7 @@ GRANT ALL PRIVILEGES ON SCHEMA public TO postuser;
 ```
 
 ### 2. Application Properties
+
 For testing, the application is configured with the following defaults in
 `src/test/resources/application.properties`:
 ```
@@ -76,6 +81,7 @@ spring.jpa.hibernate.ddl-auto=create-drop
 ```
 
 ### 3. Run Tests
+
 
 ```
 mvn test
@@ -104,6 +110,7 @@ http://localhost:8080/apis/auth
 ```
 
 ### Register & Login Endpoints (endpoint and request body)
+
 1. Register:
 - POST `/apis/auth/register`
 - Request Body:
@@ -129,9 +136,43 @@ http://localhost:8080/apis/auth
 The APIs use JWT for authentication. When accessing the post and comment endpoints, a valid token must be present as the value of the Authorization header of the request body. 
 
 ```json
-    {
-        "Authorization": "Bearer [valid-token]",
-    }
+{
+    "Authorization": "Bearer [valid-token]",
+}
 ```
 
 A token is returned as a response upon valid login.
+
+### Post Endpoints (endpoint and request body)
+
+A Post DTO will be returned upon successful post creation. The Post DTO can be used to access the ID of the created post.
+
+1. Create Post:
+- POST `/apis/post`
+- Request Body:
+    ```json
+    {
+        "title": "title",
+        "content": "content"   
+    }
+    ```
+
+
+2. Update Post:
+- PUT `/apis/post/{id}`
+- Request Body:
+    ```json
+    {
+        "title": "title",
+        "content": "content"   
+    }
+    ```
+
+3. Delete Post:
+- DELETE `/apis/post/{id}`
+
+4. Get Post:
+- GET `/apis/post/{id}`
+
+5. Get Posts:
+- GET `/apis/post`
