@@ -168,10 +168,6 @@ public class CommentControllerTest {
         String postresult_json = postresult.getResponse( ).getContentAsString( );
         Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
 
-        request = new CommentRequest( );
-        request.setContent("example comment content");
-        request_json = mapper.writeValueAsString(request);
-
         mock.perform(put("/apis/comment/{id}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid))
