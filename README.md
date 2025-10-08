@@ -137,7 +137,7 @@ The APIs use JWT for authentication. When accessing the post and comment endpoin
 
 ```json
 {
-    "Authorization": "Bearer [valid-token]",
+    "Authorization": "Bearer [valid-token]"
 }
 ```
 
@@ -176,3 +176,56 @@ A Post DTO will be returned upon successful post creation. The Post DTO can be u
 
 5. Get Posts:
 - GET `/apis/post`
+
+### Comment Endpoints
+
+A Comment DTO will be returned upon successful comment creation. The Comment DTO can be used to access the ID of the created comment.
+
+Note that comments are associated with posts. Hence, the id of a post is required as a parameter in comment requests.
+
+1. Create Comment
+- POST `/apis/comment`
+- Request Body:
+    ```json
+    {
+        "content": "content"
+    }
+    ```
+- Request Param:
+    ```
+    pid: postid
+    ```
+
+2. Update Comment
+- PUT `/apis/comment/{cid}`
+- Request Body:
+    ```json
+    {
+        "content": "content"
+    }
+    ```
+- Request Param:
+    ```
+    pid: postid
+    ```
+
+3. Delete Comment
+- DELETE `/apis/comment/{cid}`
+- Request Param:
+    ```
+    pid: postid
+    ```
+
+4. Get Comment
+- GET `/apis/comment/{cid}`
+- Request Param:
+    ```
+    pid: postid
+    ```
+
+5. Get Comments
+- GET `/apis/comment/`
+- Request Param:
+    ```
+    pid: postid
+    ```
