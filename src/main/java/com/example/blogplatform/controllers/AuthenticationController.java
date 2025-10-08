@@ -25,32 +25,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AuthenticationController {
 
     private final JWTUtil util;
-    private final UserRepository repo;
+    private final UserRepository userrepo;
     private final PasswordEncoder encoder;
 
     public AuthenticationController(UserRepository repo, PasswordEncoder encoder, JWTUtil util) {
         this.util = util;
-        this.repo = repo;
+        this.userrepo = repo;
         this.encoder = encoder;
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid AuthRequest request) throws BadRequestException {
-        if (repo.existsByUsername(request.getUsername( ))) {
+        if (userrepo.existsByUsername(request.getUsername( ))) {
             throw new BadRequestException("username already taken");
         }
 
         User user = new User( );
         user.setUsername(request.getUsername( ));
         user.setPassword(encoder.encode(request.getPassword( )));
-        repo.save(user);
+        userrepo.save(user);
 
         return ResponseEntity.ok("user has been registered");
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) throws ResourceNotFoundException {
-        User user = repo.findByUsername(request.getUsername( )).orElseThrow(
+        User user = userrepo.findByUsername(request.getUsername( )).orElseThrow(
             ( ) -> new ResourceNotFoundException("user does not exist")
         );
 

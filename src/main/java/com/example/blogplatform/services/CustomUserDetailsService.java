@@ -11,15 +11,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     
-    private final UserRepository repo;
+    private final UserRepository userrepo;
 
-    public CustomUserDetailsService(UserRepository repo) {
-        this.repo = repo;
+    public CustomUserDetailsService(UserRepository userrepo) {
+        this.userrepo = userrepo;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByUsername(username).orElseThrow(( ) -> new UsernameNotFoundException("user does not exist"));
+        User user = userrepo.findByUsername(username).orElseThrow(( ) -> new UsernameNotFoundException("user does not exist"));
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername( ))
