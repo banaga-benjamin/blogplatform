@@ -174,10 +174,37 @@ public class CommentControllerTest {
 
         mock.perform(delete("/apis/comment/{id}", id)
                         .header("Authorization", "Bearer " + token)
-                        .queryParam("pid", String.valueOf(pid))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request_json))
+                        .queryParam("pid", String.valueOf(pid)))
             .andExpect(status( ).isNoContent( ));
+    }
+
+    @Test
+    public void deleteNonExistentComment( ) throws Exception {
+        // nonexistent post and comment
+        mock.perform(delete("/apis/comment/{id}", 9999)
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(9999)))
+            .andExpect(status( ).isNotFound( ));
+
+        // existent post but nonexistent comment
+        PostRequest postRequest = new PostRequest( );
+        postRequest.setContent("example post content");
+        postRequest.setTitle("example post title");
+        String postrequest_json = mapper.writeValueAsString(postRequest);
+
+        MvcResult postresult = mock.perform(post("/apis/post")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(postrequest_json))
+            .andReturn( );
+        
+        String postresult_json = postresult.getResponse( ).getContentAsString( );
+        Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
+
+        mock.perform(delete("/apis/comment/{id}", 9999)
+                        .header("Authorization", "Bearer " + token)
+                        .queryParam("pid", String.valueOf(pid)))
+            .andExpect(status( ).isNotFound( ));
     }
 
     // get comment tests
