@@ -126,12 +126,12 @@ public class CommentControllerTest {
             .andReturn( );
 
         String result_json = result.getResponse( ).getContentAsString( );
-        Long id = mapper.readValue(result_json, CommentDTO.class).getId( );
+        Long cid = mapper.readValue(result_json, CommentDTO.class).getId( );
 
         request.setContent("updated comment content");
         request_json = mapper.writeValueAsString(request);
 
-        mock.perform(put("/apis/comment/{id}", id)
+        mock.perform(put("/apis/comment/{cid}", cid)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -146,7 +146,7 @@ public class CommentControllerTest {
         request.setContent("example comment content");
         String request_json = mapper.writeValueAsString(request);
 
-        mock.perform(put("/apis/comment/{id}", 9999)
+        mock.perform(put("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(9999))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +168,7 @@ public class CommentControllerTest {
         String postresult_json = postresult.getResponse( ).getContentAsString( );
         Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
 
-        mock.perform(put("/apis/comment/{id}", 9999)
+        mock.perform(put("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -208,9 +208,9 @@ public class CommentControllerTest {
             .andReturn( );
 
         String result_json = result.getResponse( ).getContentAsString( );
-        Long id = mapper.readValue(result_json, CommentDTO.class).getId( );
+        Long cid = mapper.readValue(result_json, CommentDTO.class).getId( );
 
-        mock.perform(delete("/apis/comment/{id}", id)
+        mock.perform(delete("/apis/comment/{cid}", cid)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid)))
             .andExpect(status( ).isNoContent( ));
@@ -219,7 +219,7 @@ public class CommentControllerTest {
     @Test
     public void deleteNonExistentComment( ) throws Exception {
         // nonexistent post and comment
-        mock.perform(delete("/apis/comment/{id}", 9999)
+        mock.perform(delete("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(9999)))
             .andExpect(status( ).isNotFound( ));
@@ -239,7 +239,7 @@ public class CommentControllerTest {
         String postresult_json = postresult.getResponse( ).getContentAsString( );
         Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
 
-        mock.perform(delete("/apis/comment/{id}", 9999)
+        mock.perform(delete("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid)))
             .andExpect(status( ).isNotFound( ));
@@ -279,7 +279,7 @@ public class CommentControllerTest {
         String result_json = result.getResponse( ).getContentAsString( );
         Long cid = mapper.readValue(result_json, CommentDTO.class).getId( );
 
-        mock.perform(get("/apis/comment/{id}", cid)
+        mock.perform(get("/apis/comment/{cid}", cid)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid)))
             .andExpect(jsonPath("$.content").value("example comment content"))
@@ -289,7 +289,7 @@ public class CommentControllerTest {
     @Test
     public void getNonExistentUserComment( ) throws Exception {
         // nonexistent post and comment
-        mock.perform(get("/apis/comment/{id}", 9999)
+        mock.perform(get("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(9999)))
             .andExpect(status( ).isNotFound( ));
@@ -309,7 +309,7 @@ public class CommentControllerTest {
         String postresult_json = postresult.getResponse( ).getContentAsString( );
         Long pid = mapper.readValue(postresult_json, PostDTO.class).getId( );
 
-        mock.perform(get("/apis/comment/{id}", 9999)
+        mock.perform(get("/apis/comment/{cid}", 9999)
                         .header("Authorization", "Bearer " + token)
                         .queryParam("pid", String.valueOf(pid)))
             .andExpect(status( ).isNotFound( ));
